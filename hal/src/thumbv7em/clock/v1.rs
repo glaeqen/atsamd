@@ -4,10 +4,10 @@
 //! The other types in this module are used to enforce at compile time
 //! that the peripherals have been correctly configured.
 use crate::clock::v2::pclk::*;
-use crate::sercom::v2::*;
 use crate::pac::gclk::genctrl::SRC_A::*;
 use crate::pac::gclk::pchctrl::GEN_A::*;
 use crate::pac::{self, GCLK, MCLK, NVMCTRL, OSC32KCTRL, OSCCTRL};
+use crate::sercom::v2::*;
 use crate::time::{Hertz, MegaHertz};
 
 pub type ClockGenId = pac::gclk::pchctrl::GEN_A;
