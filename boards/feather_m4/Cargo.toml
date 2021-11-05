@@ -72,3 +72,7 @@ required-features = ["dma"]
 [[example]]
 name = "uart"
 required-features = ["dma"]
+
+[[example]]
+name = "nvm_dsu"
+required-features = ["unproven", "usb"]
