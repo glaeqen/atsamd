@@ -34,12 +34,17 @@
 //!
 //! ```no_run
 //! # use atsamd_hal::{
-//! #     clock::v2::{gclk::Gclk, gclkio::GclkOut, retrieve_clocks, pclk::Pclk},
+//! #     clock::v2::{
+//! #         clock_system_at_reset,
+//! #         gclk::Gclk,
+//! #         gclkio::GclkOut,
+//! #         pclk::Pclk,
+//! #     },
 //! #     gpio::v2::Pins,
 //! #     pac::Peripherals,
 //! # };
 //! let mut pac = Peripherals::take().unwrap();
-//! let (gclk0, dfll, _, tokens) = retrieve_clocks(
+//! let (_buses, clocks,tokens) = clock_system_at_reset(
 //!     pac.OSCCTRL,
 //!     pac.OSC32KCTRL,
 //!     pac.GCLK,
@@ -47,11 +52,11 @@
 //!     &mut pac.NVMCTRL,
 //! );
 //! let pins = Pins::new(pac.PORT);
-//! let (gclk1, dfll) = Gclk::new(tokens.gclks.gclk1, dfll);
+//! let (gclk1, _dfll) = Gclk::new(tokens.gclks.gclk1, clocks.dfll);
 //! let gclk1 = gclk1.enable();
-//! let (gclk2, gclk1) = Gclk::new(tokens.gclks.gclk2, gclk1);
+//! let (gclk2, _gclk1) = Gclk::new(tokens.gclks.gclk2, gclk1);
 //! let gclk2 = gclk2.enable();
-//! let (pclk_sercom0, gclk2) = Pclk::enable(tokens.pclks.sercom0, gclk2);
+//! let (_pclk_sercom0, _gclk2) = Pclk::enable(tokens.pclks.sercom0, gclk2);
 //! ```
 
 use core::marker::PhantomData;
