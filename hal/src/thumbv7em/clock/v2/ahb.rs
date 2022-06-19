@@ -58,7 +58,7 @@ use super::types::*;
 ///     &mut pac.NVMCTRL,
 /// );
 /// // We do not need USB, so disable the USB AHB clock
-/// let _usb = buses.ahb.disable(clocks.ahbs.usb);
+/// let usb = buses.ahb.disable(clocks.ahbs.usb);
 /// ```
 pub struct Ahb(());
 

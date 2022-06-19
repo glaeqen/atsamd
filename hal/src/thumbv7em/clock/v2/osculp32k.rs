@@ -222,7 +222,7 @@ impl OscUlp32k {
     ///     pac.MCLK,
     ///     &mut pac.NVMCTRL,
     /// );
-    /// let (osculp1k, osculp) = OscUlp32k::enable(
+    /// let (osculp32k, osculp) = OscUlp32k::enable(
     ///     tokens.osculp.osculp32k,
     ///     clocks.osculp_base,
     /// );
