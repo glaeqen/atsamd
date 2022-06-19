@@ -120,6 +120,7 @@ pub struct Tokens {
 ///
 /// This function consumes the [`OSCCTRL`], [`OSC32KCTRL`], [`GCLK`] and
 /// [`MCLK`] PAC structs and returns the [`Buses`], [`Clocks`] and [`Tokens`].
+///
 /// See the [module-level documentation](super) for more details.
 #[inline]
 pub fn clock_system_at_reset(

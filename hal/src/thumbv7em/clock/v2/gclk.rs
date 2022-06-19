@@ -40,7 +40,7 @@
 //! #         gclkio::GclkOut,
 //! #         pclk::Pclk,
 //! #     },
-//! #     gpio::v2::Pins,
+//! #     gpio::Pins,
 //! #     pac::Peripherals,
 //! # };
 //! let mut pac = Peripherals::take().unwrap();
@@ -52,7 +52,7 @@
 //!     &mut pac.NVMCTRL,
 //! );
 //! let pins = Pins::new(pac.PORT);
-//! let (gclk1, _dfll) = Gclk::new(tokens.gclks.gclk1, clocks.dfll);
+//! let (gclk1, dfll) = Gclk::new(tokens.gclks.gclk1, clocks.dfll);
 //! let gclk1 = gclk1.enable();
 //! let (gclk2, _gclk1) = Gclk::new(tokens.gclks.gclk2, gclk1);
 //! let gclk2 = gclk2.enable();
@@ -335,7 +335,7 @@ pub trait GclkDivider: Sealed + Default + Copy {
 /// In `DIVSEL` mode `DIV2` (register value 1) the division factor is calculated
 /// as
 ///
-/// ```ignore
+/// ```text
 /// division_factor = 2.pow(1 + DIV_register)
 /// ```
 ///
@@ -367,7 +367,7 @@ pub enum GclkDiv {
 /// In `DIVSEL` mode `DIV2` (register value 1) the division factor is calculated
 /// as
 ///
-/// ```ignore
+/// ```text
 /// division_factor = 2.pow(1 + DIV_register)
 /// ```
 ///
