@@ -318,7 +318,6 @@ where
         token: GclkOutToken<G>,
         pin: impl AnyPin<Id = I>,
         mut gclk: EnabledGclk<G, S, N>,
-        polarity: bool,
     ) -> (GclkOut<G, I>, EnabledGclk<G, S, N::Inc>)
     where
         S: GclkSourceId,
@@ -326,7 +325,7 @@ where
     {
         let freq = gclk.freq();
         let pin = pin.into().into_alternate();
-        gclk.enable_gclk_out(polarity);
+        gclk.enable_gclk_out();
         let gclk_out = GclkOut { token, freq, pin };
         (gclk_out, gclk.inc())
     }

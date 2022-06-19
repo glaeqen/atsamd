@@ -157,19 +157,17 @@ impl<G: GclkId> GclkToken<G> {
         self.wait_syncbusy();
     }
 
-    /// Enable output of the generator clock over [`GCLK_IO`][GclkIo] pins
-    ///
-    /// `polarity` sets the "Output Off Value" (OOV) which sets the state
-    /// of the pin when the output is disabled.
-    ///
-    /// Example: `polarity` = true sets the pin high when the output is
-    /// disabled with [`disable_gclk_out`]
+    /// Set the state of [`GclkOut`] pins when the GCLK_IO output is disabled
     #[inline]
-    fn enable_gclk_out(&mut self, polarity: bool) {
-        self.genctrl().modify(|_, w| {
-            w.oe().set_bit();
-            w.oov().bit(polarity)
-        });
+    fn output_off_value(&mut self, high: bool) {
+        self.genctrl().modify(|_, w| w.oov().bit(high));
+        self.wait_syncbusy();
+    }
+
+    /// Enable output of the generator clock on GCLK_IO pins
+    #[inline]
+    fn enable_gclk_out(&mut self) {
+        self.genctrl().modify(|_, w| w.oe().set_bit());
         self.wait_syncbusy();
     }
 
@@ -565,6 +563,8 @@ where
     /// [`Gclk`] divider, modifying the [`Gclk.src_freq`]uency; affecting the
     /// output frequency
     div: G::DividerType,
+    /// State of `GclkOut` pins when GCLK_IO is disabled
+    output_off_value: bool,
     /// Improve duty cycle, used to ensure 50-50 duty cycle with odd dividers
     improve_duty_cycle: bool,
 }
@@ -593,14 +593,13 @@ where
     where
         S: Source<Id = I> + Increment,
     {
-        let src_freq = source.freq();
-        let improve_duty_cycle = false;
         let config = Gclk {
             token,
             src: PhantomData,
-            src_freq,
+            src_freq: source.freq(),
             div: G::DividerType::default(),
-            improve_duty_cycle,
+            output_off_value: false,
+            improve_duty_cycle: false,
         };
         (config, source.inc())
     }
@@ -630,11 +629,20 @@ where
             src: PhantomData,
             src_freq: new.freq(),
             div: self.div,
+            output_off_value: self.output_off_value,
             improve_duty_cycle: self.improve_duty_cycle,
         };
         let old = old.dec();
         let new = new.inc();
         (config, old, new)
+    }
+
+    /// Set the state of [`GclkOut`](super::gclkio::GclkOut) pins when GCLK_IO
+    /// output is disabled
+    #[inline]
+    pub fn output_off_value(mut self, high: bool) -> Self {
+        self.output_off_value = high;
+        self
     }
 
     /// When dividing an input clock with a odd division factor the duty-cycle
@@ -682,6 +690,7 @@ where
     #[inline]
     pub fn enable(mut self) -> EnabledGclk<G, I> {
         self.token.set_source(I::DYN);
+        self.token.output_off_value(self.output_off_value);
         self.token.improve_duty_cycle(self.improve_duty_cycle);
         self.token.set_div(self.div);
         self.token.enable();
@@ -699,19 +708,13 @@ where
     I: GclkSourceId,
     N: Counter,
 {
-    /// Enable the [`Gclk`] clock output
-    ///
-    /// `polarity` sets the "Output Off Value" which is
-    /// the pin state when disabled
+    /// Enable the [`Gclk`] clock output to GPIO pins
     #[inline]
-    pub(super) fn enable_gclk_out(&mut self, polarity: bool) {
-        self.0.token.enable_gclk_out(polarity);
+    pub(super) fn enable_gclk_out(&mut self) {
+        self.0.token.enable_gclk_out();
     }
 
-    /// Disable the [`Gclk`] clock output
-    ///
-    /// Pin state assumes the value as specified in
-    /// `enable_gclk_out(polarity)`
+    /// Disable the [`Gclk`] clock output to GPIO pins
     #[inline]
     pub(super) fn disable_gclk_out(&mut self) {
         self.0.token.disable_gclk_out();
