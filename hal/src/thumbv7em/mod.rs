@@ -2,6 +2,7 @@ pub mod aes;
 pub mod calibration;
 pub mod clock;
 pub mod eic;
+pub mod pmu;
 pub mod pukcc;
 pub mod qspi;
 pub mod timer;
